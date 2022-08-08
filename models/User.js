@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    solde_vitamix:{
+        type: Number,
+        default: 0
+    },
     
     friendRequest: []
 

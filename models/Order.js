@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema(
   {
     userId: { 
       type: ObjectId, 
-      required: true
+      ref: 'User'
     },
     
     products: [],
@@ -21,6 +21,16 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       default: 'null'
+    },
+    // bayWith: {
+    //   type: String
+    // }
+    payWith: {
+      // COD - CC
+      type: String
+    },
+    usedPromoCode: {
+        type: Boolean
     }
   },
   { timestamps: true }

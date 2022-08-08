@@ -11,6 +11,7 @@ const emailRouter = require('./routes/mail')
 const categoryRouter = require('./routes/category')
 const productRouter = require('./routes/product')
 const subcategoryRouter = require('./routes/subCategory')
+const codePromoRouter = require('./routes/codePromo')
 const orderRouter = require('./routes/order')
 
 
@@ -58,6 +59,7 @@ app.use('/api/emails', emailRouter)
 app.use('/api/category', categoryRouter)
 app.use('/api/product', productRouter)
 app.use('/api/subcategory', subcategoryRouter)
+app.use('/api/codePromo', codePromoRouter)
 app.use('/api/order', orderRouter)
 
 // const port = process.env.PORT || 3000
@@ -77,7 +79,7 @@ io.on("connection", socket => {
 
    socket.on('sendFriendReques', (data)=>{
 
-    console.log("DATA EMIT", data)
+    // console.log("DATA EMIT", data)
     io.to(data.userId).emit('newFriendRequest', {name: data.userNameFrom, id: data.userIdFROM})
 
     //    sendFriendRequest(data).then(()=>{
@@ -90,35 +92,5 @@ io.on("connection", socket => {
    })
 
 
-
-
-
 }); 
 
-
-  
-//   io.on("connection", (socket) => {
-//     // console.log("Connected to socket.io");
-
-//     socket.on('testApp', (userData)=>{
-//         socket.join(userData)
-//         // console.log()
-//     })
-//     // socket.on("setup", (userData) => {
-//     //   socket.join(userData._id);
-//     //   socket.emit("connected");
-//     // });
-
-//     socket.on("new message", (newMessageRecieved) => {
-//         var chat = newMessageRecieved.chat;
-    
-//         if (!chat.users) return console.log("chat.users not defined");
-    
-//         chat.users.forEach((user) => {
-//           if (user._id == newMessageRecieved.sender._id) return;
-    
-//           socket.in(user._id).emit("message recieved", newMessageRecieved);
-//         });
-//       });
-  
-//   });

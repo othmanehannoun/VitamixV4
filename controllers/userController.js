@@ -22,6 +22,30 @@ dotenv.config();
         }
     })
 
+exports.getUserCurrentSold = (req, res, next) => {
+    var Query = User.findOne({_id: req.params.Uid})
+    Query.exec((err, user) => {
+        if(err)
+            return res.status(400).json({error: err})
+        req.userCurrentSold = user
+        next()
+    })
+}
+    
+exports.updateThisUserSoldVitamix = (req, res) => {
+    console.log(req.userCurrentSold.solde_vitamix, req.body.sumOfPrice);
+    if((parseInt(req.userCurrentSold.solde_vitamix) - parseInt(req.body.sumOfPrice)) < 0)
+        return res.status(400).json({error: "recharger votre font"})
+    let restOfFont = parseInt(req.userCurrentSold.solde_vitamix) - parseInt(req.body.sumOfPrice)
+    var Query = User.updateOne({_id: req.params.Uid}, {solde_vitamix: restOfFont}, {returnOriginal: true, new: true, upsert: true, rawResult: true})
+    Query.exec((err, user) => {
+        if(err)
+            return res.status(400).json({error: err})
+
+        res.json(user)
+    })
+}
+
 exports.checkThisEmailIfExist = (req, res, next) => {
     User.find({email: req.body.email}, (err, data) => {
         if(err || !data || data.length >= 1)
@@ -75,12 +99,12 @@ exports.signin = (req, res) => {
     
             res.cookie('token', token, { expire: new Date() + (60*24*3600000) })
 
-            const {_id, name, email, role, phone, Point_Fidilite} = user;
+            const {_id, name, email, role, phone, Point_Fidilite, solde_vitamix} = user;
 
             // return res.json({
             // token, user: {_id, name, email, role}
             // })
-            return res.json({ token, _id, name, email, phone, Point_Fidilite, role })
+            return res.json({ token, _id, name, email, phone, Point_Fidilite, role, solde_vitamix })
         })
     }
     catch(error) {
@@ -158,7 +182,8 @@ exports.updateUserPassword = (req, res) => {
              {
                 Point_Fidilite: user.Point_Fidilite  + Number(req.body.point)
              }, 
-             option)
+             option
+        )
         
 
         if(result){

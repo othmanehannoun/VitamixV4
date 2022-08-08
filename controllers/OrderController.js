@@ -1,6 +1,9 @@
 const Order = require('../models/Order')
+const UserPoint = require('../models/UserPoint')
+const User = require('../models/User')
 
-exports.addOrder = (req, res) => {
+
+exports.addOrder = (req, res, next) => {
     const order = new Order(req.body)
 
     order.save((err, order) => {
@@ -8,21 +11,43 @@ exports.addOrder = (req, res) => {
             return res.status(400).json({error: err})
         }
 
-        res.send(order)
+        req.orderInfo = order
+        next()
     })
 }
 
+exports.addPointToThisUser = async(req, res) => {
+    req.body.fromUser = req.orderInfo.userId
+    req.body.numberOfPoint = req.orderInfo.totalPrice * 0.1
+    // req.body.productList = req.orderInfo.products
+
+    const userPoint = new UserPoint(req.body)
+
+    userPoint.save( async(err, point) => {
+        if(err) {
+            return res.status(400).json({error: err})
+        }
+
+        const user = await User.findById(req.body.fromUser);
+        if(user){
+            await User.findByIdAndUpdate(req.body.fromUser,
+                {
+                   Point_Fidilite: user.Point_Fidilite  + Number(req.body.numberOfPoint)
+                }, 
+                
+           )
+        }
+        else{
+            res.status(400).json("ERRROR")
+        }
+
+        res.send(req.orderInfo)
+        
+    })
+}
+
+
 //GET USER ORDERS
-// exports.getOrderByUserId = (req, res) => {
-
-//     try {
-//       const orders = Order.find({ userId: req.params.userId });
-//       res.status(200).json(orders);
-//     } catch (err) {
-//       res.status(500).json(err);
-//     }
-
-// }
 exports.getOrderByUserId = (req, res) => {
   Order.find({userId: req.params.userId}).exec((err, order) => {
       if(err)
